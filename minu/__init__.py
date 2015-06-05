@@ -22,7 +22,7 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
-     #RootFactory from security module
+     #Session factory included
     config = Configurator(settings=settings, session_factory = my_session_factory)
 
 

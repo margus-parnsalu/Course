@@ -44,4 +44,4 @@ class Department(Base):
         return self.department_name
 
 #Pagination page row count
-ITEMS_PER_PAGE = 2
+ITEMS_PER_PAGE = 3
