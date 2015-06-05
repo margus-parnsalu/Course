@@ -1,0 +1,16 @@
+{% block content %}
+
+        {{ form.csrf_token() }}
+
+        {% if form.errors %}
+            <div class="alert alert-warning">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+{% endblock %}
