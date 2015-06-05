@@ -1,7 +1,7 @@
 Jinja2 (2.7.3)
 Mako (1.0.1)
 MarkupSafe (0.23)
-minu (0.0)
+minu (0.0, /Users/margus/Projects/Course/minu)
 paginate (0.4.3)
 PasteDeploy (1.5.2)
 pip (1.5.4)
