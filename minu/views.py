@@ -24,7 +24,9 @@ def home(request):
 def department_view(request):
 
     #Sorting custom code
-    sort_value = request.matchdict.get('sort','hr_departments_department_name')
+    sort_value = 'hr_departments_department_name'
+    if request.GET.get('sort'):
+        sort_value = request.GET.get('sort')
 
     try:
         departments = DBSession.query(Department).order_by(sort_value).all()
