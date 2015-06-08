@@ -24,9 +24,7 @@ def home(request):
 def department_view(request):
 
     #Sorting custom code
-    sort_value = 'hr_departments_department_name'
-    if request.GET.get('sort'):
-        sort_value = request.GET.get('sort')
+    sort_value = request.GET.get('sort', 'hr_departments_department_name')
 
     try:
         departments = DBSession.query(Department).order_by(sort_value).all()
@@ -69,9 +67,7 @@ def department_edit(request):
 def employee_view(request):
 
     #Sorting custom code
-    sort_value = 'hr_employees_first_name'
-    if request.GET.get('sort'):
-        sort_value = request.GET.get('sort')
+    sort_value = request.GET.get('sort', 'hr_employees_first_name')
 
     try:
         employees = DBSession.query(Employee, Department).outerjoin(Department,
