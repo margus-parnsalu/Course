@@ -26,6 +26,7 @@ class DepartmentForm(BaseForm):
     department_name = StringField(u'Department Name', [validators.Length(min=3, max=60),
                                          validators.InputRequired(message=(u'Input Department Name'))])
 
+
 class EmployeeForm(BaseForm):
     first_name = StringField(u'First Name', [validators.Length(min=4, max=64), validators.InputRequired(message=(u'Input First Name'))])
     last_name = StringField(u'Last Name', [validators.Length(min=4, max=64), validators.InputRequired(message=(u'Input Last Name'))])

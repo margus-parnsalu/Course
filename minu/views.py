@@ -42,23 +42,30 @@ def department_view(request):
 
 @view_config(route_name='department_add', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_add(request):
+
     form = DepartmentForm(request.POST, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         dep = Department(department_name = form.department_name.data)
         DBSession.add(dep)
         request.session.flash('Department Added!')
         return HTTPFound(location=request.route_url('department_view'))
+
     return {'form': form}
 
 @view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_edit(request):
+
     department = DBSession.query(Department).filter(Department.department_id==request.matchdict['dep_id']).first()
+
     form = DepartmentForm(request.POST, department, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         form.populate_obj(department)
         DBSession.add(department)
         request.session.flash('Department Updated!')
         return HTTPFound(location=request.route_url('department_view'))
+
     return {'form': form}
 
 
@@ -86,7 +93,9 @@ def employee_view(request):
 
 @view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'])
 def employee_add(request):
+
     form = EmployeeForm(request.POST, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         emp = Employee(first_name = form.first_name.data,
                        last_name = form.last_name.data,
@@ -99,18 +108,23 @@ def employee_add(request):
         DBSession.add(emp)
         request.session.flash('Employee Added!')
         return HTTPFound(location=request.route_url('employee_view'))
+
     return {'form': form}
 
 
 @view_config(route_name='employee_edit', renderer='employee_f.jinja2', request_method=['GET','POST'])
 def employee_edit(request):
+
     try:
         employee = DBSession.query(Employee).filter(Employee.employee_id==request.matchdict['emp_id']).first()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
     if employee is None:
         return HTTPNotFound('Employee not found!')
+
     form = EmployeeForm(request.POST, employee, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         #Update Employee
         employee.first_name = form.first_name.data
@@ -124,6 +138,7 @@ def employee_edit(request):
         DBSession.add(employee)
         request.session.flash('Employee Updated!')
         return HTTPFound(location=request.route_url('employee_view'))
+
     return {'form': form}
 
 
