@@ -42,23 +42,29 @@ def department_view(request):
 
 @view_config(route_name='department_add', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_add(request):
+
     form = DepartmentForm(request.POST, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         dep = Department(department_name = form.department_name.data)
         DBSession.add(dep)
         request.session.flash('Department Added!')
         return HTTPFound(location=request.route_url('department_view'))
+
     return {'form': form}
 
 @view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_edit(request):
+
     department = DBSession.query(Department).filter(Department.department_id==request.matchdict['dep_id']).first()
     form = DepartmentForm(request.POST, department, csrf_context=request.session)
+
     if request.method == 'POST' and form.validate():
         form.populate_obj(department)
         DBSession.add(department)
         request.session.flash('Department Updated!')
         return HTTPFound(location=request.route_url('department_view'))
+    
     return {'form': form}
 
 
