@@ -53,6 +53,7 @@ def department_add(request):
 
     return {'form': form}
 
+
 @view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_edit(request):
 
@@ -64,7 +65,7 @@ def department_edit(request):
         DBSession.add(department)
         request.session.flash('Department Updated!')
         return HTTPFound(location=request.route_url('department_view'))
-    
+
     return {'form': form}
 
 
