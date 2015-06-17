@@ -77,9 +77,11 @@ def employee_view(request):
     sort_value = request.GET.get('sort', 'hr_employees_first_name')
 
     try:
-        employees = DBSession.query(Employee, Department).outerjoin(Department,
-                                                               Employee.department_id==Department.department_id).\
-            filter(Employee.end_date==None).order_by(sort_value).all()
+        employees = (DBSession.query(Employee, Department)
+                     .outerjoin(Department, Employee.department_id==Department.department_id)
+                     .filter(Employee.end_date==None)
+                     .order_by(sort_value)
+                     .all())
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
