@@ -6,7 +6,7 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (DBSession, Department, ITEMS_PER_PAGE )
 
-#From SqlAlchemy object pagination logic
+#SqlAlchemy object pagination logic extends Paginate
 from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from .forms import (DepartmentForm)
