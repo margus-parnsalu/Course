@@ -6,7 +6,7 @@
     <table class="table">
             <thead>
                 <tr>
-                  <th><a href="{{ request.route_url('department_view') + '?sort=hr_departments_department_name' }}">Department Name</a></th>
+                  <th><a href="{{ request.route_url('department_view') + '?sort=department' }}">Department Name</a></th>
                 </tr>
             <tbody>
                 {% for department in departments %}

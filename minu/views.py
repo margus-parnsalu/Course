@@ -6,16 +6,18 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (DBSession, Department, ITEMS_PER_PAGE )
 
-from paginate import Page
+#From SqlAlchemy object pagination logic
+from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from .forms import (DepartmentForm)
+from .sorts import SORT_DICT
 
 
 
 
 @view_config(route_name='home', renderer='home.jinja2', request_method='GET')
 def home(request):
-    return {'project': 'Hello World'}
+    return {'project': 'Koolitus'}
 
 
 
@@ -24,17 +26,19 @@ def home(request):
 def department_view(request):
 
     #Sorting custom code
-    sort_value = request.GET.get('sort', 'hr_departments_department_name')
+    sort_value = request.GET.get('sort', 'department')
 
     try:
-        departments = DBSession.query(Department).order_by(sort_value).all()
+        departments = (DBSession.query(Department)
+                       .order_by(SORT_DICT.get(sort_value, ''))
+                    )
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
-    #Pagination logic
+    #Pagination logic with Sqlalchemy
     current_page = int(request.matchdict.get('page','1'))
     url_for_page = lambda p: request.route_url('department_view:page', page=p) + '?sort=' + sort_value
-    records = Page(departments, current_page, url_maker=url_for_page, items_per_page=ITEMS_PER_PAGE)
+    records = SqlalchemyOrmPage(departments, current_page, url_maker=url_for_page, items_per_page=ITEMS_PER_PAGE)
 
     return {'departments': records}
 
