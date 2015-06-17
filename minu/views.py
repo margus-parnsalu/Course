@@ -3,7 +3,6 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy import func
 
 from .models import (DBSession, Department, ITEMS_PER_PAGE )
 

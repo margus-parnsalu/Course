@@ -19,7 +19,7 @@ requires = [
     'psycopg2==2.6',
     'pyramid_jinja2==2.5',
     'WTForms==2.0.2',
-    'paginate==0.4.3'
+    'paginate_sqlalchemy==0.2.0'
     ]
 
 setup(name='minu',
