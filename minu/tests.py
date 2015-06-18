@@ -11,7 +11,7 @@ def _initTestingDB():
         Base,
         Department
         )
-    engine = create_engine('sqlite:////Users/margus/Projects/Course/test.sqlite')
+    engine = create_engine('sqlite:///my_test.sqlite')
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
     with transaction.manager:
@@ -67,7 +67,7 @@ class ViewDepartmentTests(unittest.TestCase):
         request = testing.DummyRequest()
         _registerRoutes(self.config)
         info = self._callFUT(request)
-        self.assertEqual(
-            info['departments'][0].department_name, 'Minu Test')
+        self.assertEqual(info['departments'][0].department_name, 'Minu Test')
+        #self.assertEqual(len(info['departments']), 1)
 
 
