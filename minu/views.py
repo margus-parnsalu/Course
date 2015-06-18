@@ -35,6 +35,9 @@ def department_view(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
+    #Debug break point example
+    #import pdb; pdb.set_trace()
+
     #Pagination logic with Sqlalchemy
     current_page = int(request.matchdict.get('page','1'))
     url_for_page = lambda p: request.route_url('department_view:page', page=p) + '?sort=' + sort_value
