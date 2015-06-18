@@ -11,13 +11,14 @@ def _initTestingDB():
         Base,
         Department
         )
-    engine = create_engine('sqlite:///my_test.sqlite')
+    engine = create_engine('sqlite://')
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
     with transaction.manager:
         model = Department(department_name = 'Minu Test')
         DBSession.add(model)
     return DBSession
+
 
 
 def _registerRoutes(config):
@@ -68,6 +69,6 @@ class ViewDepartmentTests(unittest.TestCase):
         _registerRoutes(self.config)
         info = self._callFUT(request)
         self.assertEqual(info['departments'][0].department_name, 'Minu Test')
-        #self.assertEqual(len(info['departments']), 1)
+        self.assertEqual(len(info['departments']), 1)
 
 
