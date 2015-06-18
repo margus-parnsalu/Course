@@ -3,53 +3,71 @@ import transaction
 
 from pyramid import testing
 
-from .models import DBSession
+
+def _initTestingDB():
+    from sqlalchemy import create_engine
+    from .models import (
+        DBSession,
+        Base,
+        Department
+        )
+    engine = create_engine('sqlite:////Users/margus/Projects/Course/test.sqlite')
+    Base.metadata.create_all(engine)
+    DBSession.configure(bind=engine)
+    with transaction.manager:
+        model = Department(department_name = 'Minu Test')
+        DBSession.add(model)
+    return DBSession
 
 
-class TestMyViewSuccessCondition(unittest.TestCase):
+def _registerRoutes(config):
+    config.add_route('home', '/')
+    config.add_route('department_view', '/departments')
+    config.add_route('department_view:page', '/departments/page/{page:\d+}')
+    config.add_route('department_add', '/departments/add')
+    config.add_route('department_edit', '/departments/{dep_id:\d+}/edit')
+
+
+class ViewHomeTests(unittest.TestCase):
     def setUp(self):
+        self.session = _initTestingDB()
         self.config = testing.setUp()
-        from sqlalchemy import create_engine
-        engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            MyModel,
-            )
-        DBSession.configure(bind=engine)
-        Base.metadata.create_all(engine)
-        with transaction.manager:
-            model = MyModel(name='one', value=55)
-            DBSession.add(model)
 
     def tearDown(self):
-        DBSession.remove()
+        self.session.remove()
         testing.tearDown()
 
-    def test_passing_view(self):
-        from .views import my_view
+    def _callFUT(self, request):
+        from .views import home
+        return home(request)
+
+    def test_it(self):
         request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'minu')
+        _registerRoutes(self.config)
+        info = self._callFUT(request)
+        self.assertEqual(info['project'], 'Koolitus')
 
 
-class TestMyViewFailureCondition(unittest.TestCase):
+
+class ViewDepartmentTests(unittest.TestCase):
     def setUp(self):
+        self.session = _initTestingDB()
         self.config = testing.setUp()
-        from sqlalchemy import create_engine
-        engine = create_engine('sqlite://')
-        from .models import (
-            Base,
-            MyModel,
-            )
-        DBSession.configure(bind=engine)
 
     def tearDown(self):
-        DBSession.remove()
+        self.session.remove()
         testing.tearDown()
 
-    def test_failing_view(self):
-        from .views import my_view
+    def _callFUT(self, request):
+        from .views import department_view
+        return department_view(request)
+
+    def test_it(self):
+        #from .models import Department
         request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info.status_int, 500)
+        _registerRoutes(self.config)
+        info = self._callFUT(request)
+        self.assertEqual(
+            info['departments'][0].department_name, 'Minu Test')
+
+
