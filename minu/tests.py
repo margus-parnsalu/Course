@@ -1,3 +1,5 @@
+# Run tests with Nose and Coverage: nosetests --with-coverage --cover-package=minu
+
 import unittest
 import transaction
 

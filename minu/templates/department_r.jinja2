@@ -1,21 +1,21 @@
 {% extends "base.jinja2" %}
 {% block content %}
 
+
     <h3>Departments</h3>
 
     <table class="table">
-            <thead>
-                <tr>
-                  <th><a href="{{ request.route_url('department_view') + '?sort=department' }}">Department Name</a></th>
+        <thead>
+            <tr>
+                <th> <a href="{{ request.route_url('department_view') + '?sort=department' }}">
+                    Department Name</a></th>
                 </tr>
             <tbody>
                 {% for department in departments %}
-                <tr>
-                    <td><a href="{{ request.route_url('department_edit', dep_id=department.department_id) }}">
-                {{ department.department_name }} </a></td>
-
-
-                </tr>
+                    <tr>
+                        <td><a href="{{ request.route_url('department_edit', dep_id=department.department_id) }}">
+                            {{ department.department_name }} </a></td>
+                    </tr>
                 {% endfor %}
             </tbody>
     </table>
