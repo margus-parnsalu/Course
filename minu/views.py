@@ -34,6 +34,7 @@ def department_view(request):
     #Sorting custom code
     sv = SortValue(sort_input, dir_input)
     sort_value = sv.sort_str()
+    #For supporting two-way sorting on the template
     dir = sv.reverse_direction()
 
     #SqlAlchemy query object
