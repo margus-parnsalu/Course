@@ -1,5 +1,8 @@
 #Dictionary of allowed sorting values for SqlAlchemy order_by
-SORT_DICT = {'department':'hr_departments.department_name',
+SORT_DICT = {
+                '1': '1',
+                '0': '0',
+                'department':'hr_departments.department_name',
              }
 
 class SortValue:
@@ -9,12 +12,16 @@ class SortValue:
         self.direction=direction
 
     def sort_str(self):
-        order = SORT_DICT.get(self.sort_parameter, '')
-        if self.direction=='0':
-            sort='DESC'
-        else:
-            sort='ASC'
-        return ('UPPER(%s) %s' % (order, sort))
+        sort = SORT_DICT.get(self.sort_parameter, '')
+        sortstr=''
+        #If there is mach in URL query value
+        if sort != '':
+            if self.direction=='0':
+                dirstr='DESC'
+            else:
+                dirstr='ASC'
+            sortstr=('UPPER(%s) %s' % (sort, dirstr))
+        return sortstr
 
     def reverse_direction(self):
         if self.direction=='1':

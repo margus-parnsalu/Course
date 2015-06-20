@@ -3,7 +3,6 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy.sql import func
 
 from .models import (DBSession, Department, ITEMS_PER_PAGE )
 
@@ -11,7 +10,7 @@ from .models import (DBSession, Department, ITEMS_PER_PAGE )
 from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from .forms import (DepartmentForm)
-from .sorts import SortValue
+from .sorts import SORT_DICT, SortValue
 
 
 
@@ -26,9 +25,13 @@ def home(request):
 @view_config(route_name='department_view:page', renderer='department_r.jinja2', request_method='GET')
 def department_view(request):
 
+    sort_input = request.GET.get('sort','department')
+    dir_input = request.GET.get('dir','1')
+    #URL Query attribute validation
+    if SORT_DICT.get(sort_input)==None or SORT_DICT.get(dir_input)==None:
+        return HTTPFound(location=request.route_url('home'))
+
     #Sorting custom code
-    sort_input = request.GET.get('sort', 'department')
-    dir_input = request.GET.get('dir', '')
     sv = SortValue(sort_input, dir_input)
     sort_value = sv.sort_str()
     dir = sv.reverse_direction()
