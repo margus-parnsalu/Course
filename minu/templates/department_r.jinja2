@@ -7,13 +7,15 @@
     <table class="table">
         <thead>
             <tr>
-                <th> <a href="{{ request.route_url('department_view') + '?sort=department' }}">
+                <th> <a href="{{ request.route_url('department_view',
+                                                    _query=(('sort','department'),('dir', dir))) }}">
                     Department Name</a></th>
                 </tr>
             <tbody>
                 {% for department in departments %}
                     <tr>
-                        <td><a href="{{ request.route_url('department_edit', dep_id=department.department_id) }}">
+                        <td><a href="{{ request.route_url('department_edit',
+                                                           dep_id=department.department_id) }}">
                             {{ department.department_name }} </a></td>
                     </tr>
                 {% endfor %}
