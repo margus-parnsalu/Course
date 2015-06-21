@@ -4,12 +4,16 @@
 
     <h3>Departments</h3>
 
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th> <a href="{{ request.route_url('department_view',
-                                                    _query=(('sort','department'),('dir', dir))) }}">
-                    Department Name</a></th>
+                                                    _query=(('sort','department'),)) }}">
+                    Department Name</a>
+                    <a href="{{ request.route_url('department_view',
+                                                    _query=(('sort','department'),('dir',dir))) }}">
+                                <span class="glyphicon glyphicon-sort"></span></a>
+                </th>
                 </tr>
             <tbody>
                 {% for department in departments %}
@@ -21,11 +25,13 @@
                 {% endfor %}
             </tbody>
     </table>
-    <ul class="pagination pagination-center">
-        <li>{{ departments.pager(format='$link_first$link_previous~2~$link_next$link_last',
-                curpage_attr={ 'class':'active' },
-                dotdot_attr={ 'class':'disabled' })|safe }}</li>
-    </ul>
+    <div class="text-center">
+        <ul class="pagination">
+            <li>{{ departments.pager(format='$link_first$link_previous~2~$link_next$link_last',
+                    curpage_attr={ 'class':'active' },
+                    dotdot_attr={ 'class':'disabled' })|safe }}</li>
+        </ul>
+    </div/
 
 
 
