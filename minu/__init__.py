@@ -43,6 +43,11 @@ def main(global_config, **settings):
     config.add_route('department_edit', '/departments/{dep_id:\d+}/edit')
     #config.add_route('department_delete', '/departments/{dep_id:\d+}/del')
 
+    #Employees
+    config.add_route('employee_view', '/employees')
+    config.add_route('employee_view:page', '/employees/page/{page:\d+}')
+    config.add_route('employee_add', '/employees/add')
+    config.add_route('employee_edit', '/employees/{emp_id:\d+}/edit')
 
 
     config.scan()
