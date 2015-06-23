@@ -6,12 +6,21 @@
     <a class="btn btn-default" href="{{ request.route_url('employee_add') }}" role="button">Add Employee</a>
     <hr>
 
-    <table class="table">
+    <table class="table table-hover">
             <thead>
                 <tr>
-                  <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_first_name' }}">Name</a></th>
+                    <th><a href="{{ request.route_url('employee_view',_query=(('sort','employee'),)) }}">
+                    Name</a>
+                    <a href="{{ request.route_url('employee_view',
+                                                    _query=(('sort','employee'),('dir',dir))) }}">
+                    <span class="glyphicon glyphicon-sort"></span></a></th>
+
                   <th><a href="{{ request.route_url('employee_view') + '?sort=hr_departments_department_name' }}">Department</th>
-                  <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_salary' }}">Salary</a></th>
+                  <th><a href="{{ request.route_url('employee_view',_query=(('sort','salary'),)) }}">
+                    Salary</a>
+                    <a href="{{ request.route_url('employee_view',
+                                                    _query=(('sort','salary'),('dir',dir))) }}">
+                    <span class="glyphicon glyphicon-sort"></span></a></th>
                   <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_hire_date' }}">Hire Date</a></th>
                   <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_end_date' }}">End Date</a></th>
                 </tr>
@@ -28,10 +37,12 @@
                 {% endfor %}
             </tbody>
     </table>
-    <ul class="pagination pagination-center">
+    <div class="text-center">
+    <ul class="pagination">
         <li>{{ employees.pager(format='$link_first$link_previous~2~$link_next$link_last',
                 curpage_attr={ 'class':'active' },
                 dotdot_attr={ 'class':'disabled' })|safe }}</li>
     </ul>
+    </div>
 
 {% endblock %}
