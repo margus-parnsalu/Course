@@ -37,7 +37,7 @@ def department_view(request):
         return HTTPFound(location=request.route_url('home'))
     sort_value=sv.sort_str()
     #For supporting two-way sorting on the template
-    sdir = sv.reverse_direction()
+    sort_dir = sv.reverse_direction()
 
     #SqlAlchemy query object
     departments = DBSession.query(Department).order_by(sort_value)
@@ -56,7 +56,7 @@ def department_view(request):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     return {'departments': records,
-            'sdir': sdir }
+            'sortdir': sort_dir }
 
 
 
@@ -102,7 +102,7 @@ def employee_view(request):
         return HTTPFound(location=request.route_url('home'))
     sort_value=sv.sort_str()
     #For supporting two-way sorting on the template
-    sdir = sv.reverse_direction()
+    sort_dir = sv.reverse_direction()
 
     #SqlAlchemy query object
     employees = (DBSession.query(Employee, Department)
@@ -121,7 +121,7 @@ def employee_view(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'employees': records,
-            'sdir': sdir}
+            'sortdir': sort_dir}
 
 
 @view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'])
