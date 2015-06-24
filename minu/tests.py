@@ -82,6 +82,7 @@ class ViewDepartmentTests(unittest.TestCase):
         info = self._callFUT(request)
         self.assertEqual(info['departments'][0].department_name, 'A Minu Test')
         self.assertEqual(info['departments'][1].department_name, 'Z Minu Test')
+        self.assertEqual(info['sortdir'], '-department')
 
 
     def test_it_sort_desc(self):
@@ -91,6 +92,7 @@ class ViewDepartmentTests(unittest.TestCase):
         info = self._callFUT(request)
         self.assertEqual(info['departments'][0].department_name, 'Z Minu Test')
         self.assertEqual(info['departments'][1].department_name, 'A Minu Test')
+        self.assertEqual(info['sortdir'], '+department')
 
 
 
@@ -114,6 +116,13 @@ class FunctionalTests(unittest.TestCase):
     def test_homepage(self):
         res = self.testapp.get('/', status=200)
         self.assertIn(b'<h1>Koolitus</h1>', res.body)
+
+    def test_unexisting_page(self):
+        self.testapp.get('/SomePage', status=404)
+
+    def test_query_sort_unknown(self):
+        res = self.testapp.get('/departments?sort=SqlInjection', status=302)
+        self.assertEqual(res.location, 'http://localhost/')
 
 
 
