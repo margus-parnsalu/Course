@@ -94,4 +94,26 @@ class ViewDepartmentTests(unittest.TestCase):
 
 
 
+class FunctionalTests(unittest.TestCase):
+
+    def setUp(self):
+        from minu import main
+        settings = { 'sqlalchemy.url': 'sqlite://',
+                     'jinja2.directories' : 'minu:templates'
+                     }
+        app = main({}, **settings)
+        from webtest import TestApp
+        self.testapp = TestApp(app)
+        _initTestingDB()
+
+    def tearDown(self):
+        del self.testapp
+        from minu.models import DBSession
+        DBSession.remove()
+
+    def test_homepage(self):
+        res = self.testapp.get('/', status=200)
+        self.assertIn(b'<h1>Koolitus</h1>', res.body)
+
+
 

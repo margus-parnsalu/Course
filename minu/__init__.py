@@ -30,6 +30,7 @@ def main(global_config, **settings):
     #config.add_translation_dirs('locale/')
     config.include('pyramid_jinja2')
 
+
     #Static
     config.add_static_view('static', 'static', cache_max_age=3600)
 

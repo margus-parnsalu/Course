@@ -19,7 +19,8 @@ requires = [
     'psycopg2==2.6',
     'pyramid_jinja2==2.5',
     'WTForms==2.0.2',
-    'paginate_sqlalchemy==0.2.0'
+    'paginate_sqlalchemy==0.2.0',
+    'WebTest'
     ]
 
 setup(name='minu',
