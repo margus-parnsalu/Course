@@ -3,7 +3,6 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy import func
 
 from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
 
@@ -31,16 +30,14 @@ def home(request):
 def department_view(request):
 
     sort_input = request.GET.get('sort','+department')
-    dir_input = request.GET.get('dir','1')
 
     #Sorting custom code
-    sv = SortValue(sort_input, dir_input)
+    sv = SortValue(sort_input)
     if sv.validate() is False:
         return HTTPFound(location=request.route_url('home'))
-    #sort_value = sv.sort_str()
     sort_value=sv.sort_str()
     #For supporting two-way sorting on the template
-    dir = sv.reverse_direction()
+    sdir = sv.reverse_direction()
 
     #SqlAlchemy query object
     departments = DBSession.query(Department).order_by(sort_value)
@@ -59,7 +56,7 @@ def department_view(request):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     return {'departments': records,
-            'dir': dir }
+            'sdir': sdir }
 
 
 
@@ -97,35 +94,34 @@ def department_edit(request):
 @view_config(route_name='employee_view:page', renderer='employee_r.jinja2', request_method='GET')
 def employee_view(request):
 
-    sort_input = request.GET.get('sort','employee')
-    dir_input = request.GET.get('dir','1')
+    sort_input = request.GET.get('sort','+employee')
 
     #Sorting custom code
-    sv = SortValue(sort_input, dir_input)
+    sv = SortValue(sort_input)
     if sv.validate() is False:
         return HTTPFound(location=request.route_url('home'))
-    sort_value = sv.sort_str()
+    sort_value=sv.sort_str()
     #For supporting two-way sorting on the template
-    dir = sv.reverse_direction()
+    sdir = sv.reverse_direction()
 
     #SqlAlchemy query object
     employees = (DBSession.query(Employee, Department)
                      .outerjoin(Department, Employee.department_id==Department.department_id)
                      .filter(Employee.end_date==None)
-                     .order_by(func.upper(getattr(Employee, 'salary')))
+                     .order_by(sort_value)
                  )
 
 
     #Pagination logic
     current_page = int(request.matchdict.get('page','1'))
     url_for_page = lambda p: request.route_url('employee_view:page', page=p,
-                                               _query=(('sort', sort_input), ('dir', dir_input)))
+                                               _query=(('sort', sort_input), ))
     try:
         records = SqlalchemyOrmPage(employees, current_page, url_maker=url_for_page, items_per_page=ITEMS_PER_PAGE)
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'employees': records,
-            'dir': dir}
+            'sdir': sdir}
 
 
 @view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'])

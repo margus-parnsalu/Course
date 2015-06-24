@@ -1,6 +1,8 @@
 {% extends "base.jinja2" %}
 {% block content %}
 
+{% from 'sorter.jinja2' import sorter with context %}
+
 <h3>Employees</h3>
 
     <a class="btn btn-default" href="{{ request.route_url('employee_add') }}" role="button">Add Employee</a>
@@ -9,20 +11,11 @@
     <table class="table table-hover">
             <thead>
                 <tr>
-                    <th><a href="{{ request.route_url('employee_view',_query=(('sort','employee'),)) }}">
-                    Name</a>
-                    <a href="{{ request.route_url('employee_view',
-                                                    _query=(('sort','employee'),('dir',dir))) }}">
-                    <span class="glyphicon glyphicon-sort"></span></a></th>
-
-                  <th><a href="{{ request.route_url('employee_view') + '?sort=hr_departments_department_name' }}">Department</th>
-                  <th><a href="{{ request.route_url('employee_view',_query=(('sort','salary'),)) }}">
-                    Salary</a>
-                    <a href="{{ request.route_url('employee_view',
-                                                    _query=(('sort','salary'),('dir',dir))) }}">
-                    <span class="glyphicon glyphicon-sort"></span></a></th>
-                  <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_hire_date' }}">Hire Date</a></th>
-                  <th><a href="{{ request.route_url('employee_view') + '?sort=hr_employees_end_date' }}">End Date</a></th>
+                    <th>{{ sorter('employee_view', 'Name', '+employee') }}</th>
+                    <th>{{ sorter('employee_view', 'Department', '+department') }}</th>
+                    <th>{{ sorter('employee_view', 'Salary', '+salary') }}</th>
+                    <th>{{ sorter('employee_view', 'Hire Date', '+hired') }}</th>
+                    <th>{{ sorter('employee_view', 'End Date', '+hireend') }}</th>
                 </tr>
             <tbody>
                 {% for employee, department in employees %}

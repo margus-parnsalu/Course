@@ -7,12 +7,13 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th> <a href="{{ request.route_url('department_view', _query=(('sort','+department'), )) }}">
+                <th>
+                <a href="{{ request.route_url('department_view', _query=(('sort','+department'), )) }}">
                     Department Name</a>
-                    <a href="{{ request.route_url('department_view', _query=(('sort',dir), )) }}">
-                                <span class="glyphicon glyphicon-sort"></span></a>
+                <a href="{{ request.route_url('department_view', _query=(('sort', sdir), )) }}">
+                    <span class="glyphicon glyphicon-sort"></span></a>
                 </th>
-                </tr>
+            </tr>
         <tbody>
             {% for department in departments %}
                 <tr>
