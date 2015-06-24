@@ -73,8 +73,16 @@ class ViewDepartmentTests(unittest.TestCase):
         _registerRoutes(self.config)
         info = self._callFUT(request)
         self.assertEqual(info['departments'][0].department_name, 'A Minu Test')
-        self.assertEqual(info['departments'][1].department_name, 'Z Minu Test')
         self.assertEqual(len(info['departments']), 2)
+
+    def test_it_sort_asc(self):
+        request = testing.DummyRequest()
+        request.GET['sort']='+department'
+        _registerRoutes(self.config)
+        info = self._callFUT(request)
+        self.assertEqual(info['departments'][0].department_name, 'A Minu Test')
+        self.assertEqual(info['departments'][1].department_name, 'Z Minu Test')
+
 
     def test_it_sort_desc(self):
         request = testing.DummyRequest()
