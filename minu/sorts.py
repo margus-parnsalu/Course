@@ -28,7 +28,7 @@ class SortValue:
 
     def reverse_direction(self):
         if self.sort_parameter[0]=='+':
-            dir= str.replace(self.sort_parameter, '+', '-', 1)
+            dir= self.sort_parameter.replace('+', '-', 1)
         if self.sort_parameter[0]=='-':
-            dir= str.replace(self.sort_parameter, '-', '+', 1)
+            dir= self.sort_parameter.replace('-', '+', 1)
         return dir
