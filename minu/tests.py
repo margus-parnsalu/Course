@@ -17,8 +17,10 @@ def _initTestingDB():
     Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
     with transaction.manager:
-        model = Department(department_name = 'Minu Test')
-        DBSession.add(model)
+        model1 = Department(department_name = 'A Minu Test')
+        model2 = Department(department_name = 'Z Minu Test')
+        DBSession.add(model1)
+        DBSession.add(model2)
     return DBSession
 
 
@@ -70,7 +72,7 @@ class ViewDepartmentTests(unittest.TestCase):
         request = testing.DummyRequest()
         _registerRoutes(self.config)
         info = self._callFUT(request)
-        self.assertEqual(info['departments'][0].department_name, 'Minu Test')
-        self.assertEqual(len(info['departments']), 1)
+        self.assertEqual(info['departments'][0].department_name, 'A Minu Test')
+        self.assertEqual(len(info['departments']), 2)
 
 

@@ -3,6 +3,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import text
 
 from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
 
@@ -40,7 +41,7 @@ def department_view(request):
     sort_dir = sv.reverse_direction()
 
     #SqlAlchemy query object
-    departments = DBSession.query(Department).order_by(sort_value)
+    departments = DBSession.query(Department).order_by(text(sort_value))
 
     #Debug break point example
     #import pdb; pdb.set_trace()
@@ -108,7 +109,7 @@ def employee_view(request):
     employees = (DBSession.query(Employee, Department)
                      .outerjoin(Department, Employee.department_id==Department.department_id)
                      .filter(Employee.end_date==None)
-                     .order_by(sort_value)
+                     .order_by(text(sort_value))
                  )
 
 
