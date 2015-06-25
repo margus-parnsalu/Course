@@ -17,18 +17,23 @@ class SortValue:
     def __init__(self, sort_parameter):
         self.sort_parameter=sort_parameter
 
+    #URL Query attribute validation
     def validate(self):
-        #URL Query attribute validation
-        if SORT_DICT.get(self.sort_parameter)==None:
-            return False
-        return True
+        if self.sort_parameter in SORT_DICT:
+            return True
+        return False
 
+    #Return validated order_by string or None
     def sort_str(self):
-        return SORT_DICT.get(self.sort_parameter, '')
+        if self.validate() is True:
+            return SORT_DICT[self.sort_parameter]
+        return ''
 
+    #Reverses sort direction
     def reverse_direction(self):
-        if self.sort_parameter[0]=='+':
-            dir= self.sort_parameter.replace('+', '-', 1)
-        if self.sort_parameter[0]=='-':
-            dir= self.sort_parameter.replace('-', '+', 1)
+        dir = ''
+        if self.sort_parameter[0] == '+':
+            dir = self.sort_parameter.replace('+', '-', 1)
+        if self.sort_parameter[0] == '-':
+            dir = self.sort_parameter.replace('-', '+', 1)
         return dir

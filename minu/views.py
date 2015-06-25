@@ -29,24 +29,24 @@ def home(request):
 @view_config(route_name='department_view', renderer='department_r.jinja2', request_method='GET')
 @view_config(route_name='department_view:page', renderer='department_r.jinja2', request_method='GET')
 def department_view(request):
-
+    #Getting 'sort' URL query parameter and initializing if not present
     sort_input = request.GET.get('sort','+department')
-
-    #Sorting custom code
+    #Sorting custom code from sorts.py
     sv = SortValue(sort_input)
-    if sv.validate() is False:
-        return HTTPFound(location=request.route_url('home'))
     sort_value=sv.sort_str()
+    #If sort value not found reroute to homepage
+    if sort_value is '':
+        return HTTPFound(location=request.route_url('home'))
     #For supporting two-way sorting on the template
     sort_dir = sv.reverse_direction()
 
-    #SqlAlchemy query object
+    #SqlAlchemy query object for the report
     departments = DBSession.query(Department).order_by(text(sort_value))
 
     #Debug break point example
     #import pdb; pdb.set_trace()
 
-    #Pagination logic with Sqlalchemy
+    #Pagination logic with Sqlalchemy object
     current_page = int(request.matchdict.get('page','1'))
     url_for_page = lambda p: request.route_url('department_view:page', page=p,
                                                _query=(('sort', sort_input), ))
