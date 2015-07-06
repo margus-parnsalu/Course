@@ -3,14 +3,19 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import text
 
-from .models import (DBSession, Department, ITEMS_PER_PAGE )
+from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
 
 #SqlAlchemy object pagination logic extends Paginate
 from paginate_sqlalchemy import SqlalchemyOrmPage
 
+
 from .forms import (DepartmentForm)
 from .sorts import SORT_DICT, SortValue
+
+from .forms import (DepartmentForm, EmployeeForm)
+
 
 
 
@@ -24,29 +29,27 @@ def home(request):
 @view_config(route_name='department_view', renderer='department_r.jinja2', request_method='GET')
 @view_config(route_name='department_view:page', renderer='department_r.jinja2', request_method='GET')
 def department_view(request):
-
-    sort_input = request.GET.get('sort','department')
-    dir_input = request.GET.get('dir','1')
-    #URL Query attribute validation
-    if SORT_DICT.get(sort_input)==None or SORT_DICT.get(dir_input)==None:
+    #Getting 'sort' URL query parameter and initializing if not present
+    sort_input = request.GET.get('sort','+department')
+    #Sorting custom code from sorts.py
+    sv = SortValue(sort_input)
+    sort_value=sv.sort_str()
+    #If sort value not found reroute to homepage
+    if sort_value is '':
         return HTTPFound(location=request.route_url('home'))
-
-    #Sorting custom code
-    sv = SortValue(sort_input, dir_input)
-    sort_value = sv.sort_str()
     #For supporting two-way sorting on the template
-    dir = sv.reverse_direction()
+    sort_dir = sv.reverse_direction()
 
-    #SqlAlchemy query object
-    departments = DBSession.query(Department).order_by(sort_value)
+    #SqlAlchemy query object for the report
+    departments = DBSession.query(Department).order_by(text(sort_value))
 
     #Debug break point example
     #import pdb; pdb.set_trace()
 
-    #Pagination logic with Sqlalchemy
+    #Pagination logic with Sqlalchemy object
     current_page = int(request.matchdict.get('page','1'))
     url_for_page = lambda p: request.route_url('department_view:page', page=p,
-                                               _query=(('sort', sort_input), ('dir', dir_input)))
+                                               _query=(('sort', sort_input), ))
     try:
         records = SqlalchemyOrmPage(departments, current_page,
                                     url_maker=url_for_page, items_per_page=ITEMS_PER_PAGE)
@@ -54,7 +57,7 @@ def department_view(request):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     return {'departments': records,
-            'dir': dir }
+            'sortdir': sort_dir }
 
 
 
@@ -76,6 +79,7 @@ def department_add(request):
 def department_edit(request):
 
     department = DBSession.query(Department).filter(Department.department_id==request.matchdict['dep_id']).first()
+
     form = DepartmentForm(request.POST, department, csrf_context=request.session)
 
     if request.method == 'POST' and form.validate():
@@ -83,6 +87,92 @@ def department_edit(request):
         DBSession.add(department)
         request.session.flash('Department Updated!')
         return HTTPFound(location=request.route_url('department_view'))
+
+    return {'form': form}
+
+
+@view_config(route_name='employee_view', renderer='employee_r.jinja2', request_method='GET')
+@view_config(route_name='employee_view:page', renderer='employee_r.jinja2', request_method='GET')
+def employee_view(request):
+
+    sort_input = request.GET.get('sort','+employee')
+
+    #Sorting custom code
+    sv = SortValue(sort_input)
+    if sv.validate() is False:
+        return HTTPFound(location=request.route_url('home'))
+    sort_value=sv.sort_str()
+    #For supporting two-way sorting on the template
+    sort_dir = sv.reverse_direction()
+
+    #SqlAlchemy query object
+    employees = (DBSession.query(Employee, Department)
+                     .outerjoin(Department, Employee.department_id==Department.department_id)
+                     .filter(Employee.end_date==None)
+                     .order_by(text(sort_value))
+                 )
+
+
+    #Pagination logic
+    current_page = int(request.matchdict.get('page','1'))
+    url_for_page = lambda p: request.route_url('employee_view:page', page=p,
+                                               _query=(('sort', sort_input), ))
+    try:
+        records = SqlalchemyOrmPage(employees, current_page, url_maker=url_for_page, items_per_page=ITEMS_PER_PAGE)
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    return {'employees': records,
+            'sortdir': sort_dir}
+
+
+@view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'])
+def employee_add(request):
+
+    form = EmployeeForm(request.POST, csrf_context=request.session)
+
+    if request.method == 'POST' and form.validate():
+        emp = Employee(first_name = form.first_name.data,
+                       last_name = form.last_name.data,
+                       email = form.email.data,
+                       phone_number = form.phone_number.data,
+                       salary = form.salary.data,
+                       hire_date = form.hire_date.data,
+                       end_date = form.end_date.data,
+                       department = form.department.data)
+        DBSession.add(emp)
+        request.session.flash('Employee Added!')
+        return HTTPFound(location=request.route_url('employee_view'))
+
+    return {'form': form}
+
+
+@view_config(route_name='employee_edit', renderer='employee_f.jinja2', request_method=['GET','POST'])
+def employee_edit(request):
+
+    try:
+        employee = DBSession.query(Employee).filter(Employee.employee_id==request.matchdict['emp_id']).first()
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+
+    if employee is None:
+        return HTTPNotFound('Employee not found!')
+
+    form = EmployeeForm(request.POST, employee, csrf_context=request.session)
+
+    if request.method == 'POST' and form.validate():
+        #Update Employee
+        employee.first_name = form.first_name.data
+        employee.last_name = form.last_name.data
+        employee.email = form.email.data
+        employee.phone_number = form.phone_number.data
+        employee.salary = form.salary.data
+        employee.hire_date = form.hire_date.data
+        employee.department = form.department.data
+        employee.end_date = form.end_date.data
+        DBSession.add(employee)
+        request.session.flash('Employee Updated!')
+        return HTTPFound(location=request.route_url('employee_view'))
+
 
     return {'form': form}
 

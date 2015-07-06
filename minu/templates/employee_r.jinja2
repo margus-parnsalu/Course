@@ -1,0 +1,41 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+{% from 'sorter_m.jinja2' import sorter with context %}
+
+<h3>Employees</h3>
+
+    <a class="btn btn-default" href="{{ request.route_url('employee_add') }}" role="button">Add Employee</a>
+    <hr>
+
+    <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>{{ sorter('employee_view', 'Name', '+employee') }}</th>
+                    <th>{{ sorter('employee_view', 'Department', '+department') }}</th>
+                    <th>{{ sorter('employee_view', 'Salary', '+salary') }}</th>
+                    <th>{{ sorter('employee_view', 'Hire Date', '+hired') }}</th>
+                    <th>{{ sorter('employee_view', 'End Date', '+hireend') }}</th>
+                </tr>
+            <tbody>
+                {% for employee, department in employees %}
+                <tr>
+                    <td><a href="{{ request.route_url('employee_edit', emp_id=employee.employee_id) }}">
+                         {{ employee.first_name + ' ' + employee.last_name }} </a></td>
+                    <td> {{ department.department_name }} </td>
+                    <td> {{ employee.salary }} </td>
+                    <td> {{ employee.hire_date }} </td>
+                    <td> {{ employee.end_date or '' }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+    <div class="text-center">
+    <ul class="pagination">
+        <li>{{ employees.pager(format='$link_first$link_previous~2~$link_next$link_last',
+                curpage_attr={ 'class':'active' },
+                dotdot_attr={ 'class':'disabled' })|safe }}</li>
+    </ul>
+    </div>
+
+{% endblock %}

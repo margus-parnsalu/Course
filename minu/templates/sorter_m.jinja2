@@ -1,0 +1,7 @@
+{% macro sorter(view, name, sort) -%}
+
+    <a href="{{ request.route_url(  view  , _query=(('sort',  sort ), )) }}">{{ name }}</a>
+    <a href="{{ request.route_url(  view  , _query=(('sort', sortdir), )) }}">
+            <span class="glyphicon glyphicon-sort"></span></a>
+
+{%- endmacro %}

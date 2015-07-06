@@ -21,6 +21,9 @@ class Employee(Base):
     salary = Column(Integer)
 
     department_id = Column(Integer, ForeignKey('hr_departments.department_id'))
+
+
+
     department = relationship("Department", backref="hr_employees", foreign_keys=[department_id])
 
     def __repr__(self):

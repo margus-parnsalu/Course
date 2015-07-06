@@ -1,33 +1,39 @@
 #Dictionary of allowed sorting values for SqlAlchemy order_by
 SORT_DICT = {
-                '1': '1',
-                '0': '0',
-                'department':'hr_departments.department_name',
+                '-department':'upper(hr_departments.department_name) desc',
+                '+department':'upper(hr_departments.department_name) asc',
+                '+employee':'upper(hr_employees.first_name || hr_employees.last_name) asc',
+                '-employee':'upper(hr_employees.first_name || hr_employees.last_name) desc',
+                '+salary':'hr_employees.salary asc',
+                '-salary':'hr_employees.salary desc',
+                '+hired':'hr_employees.hire_date asc',
+                '-hired':'hr_employees.hire_date desc',
+                '+hireend':'hr_employees.end_date asc',
+                '-hireend':'hr_employees.end_date desc',
              }
 
 class SortValue:
 
-    def __init__(self, sort_parameter, direction):
+    def __init__(self, sort_parameter):
         self.sort_parameter=sort_parameter
-        self.direction=direction
 
+    #URL Query sort attribute validation
+    def validate(self):
+        if self.sort_parameter in SORT_DICT:
+            return True
+        return False
+
+    #Return order_by string validated by key
     def sort_str(self):
-        sort = SORT_DICT.get(self.sort_parameter, '')
-        sortstr=''
-        #If there is mach in URL query value
-        if sort != '':
-            if self.direction=='0':
-                dirstr='DESC'
-            else:
-                dirstr='ASC'
-            sortstr=('UPPER(%s) %s' % (sort, dirstr))
-        return sortstr
+        if self.validate() is True:
+            return SORT_DICT[self.sort_parameter]
+        return ''
 
+    #Reverses sort direction for two-way sorting
     def reverse_direction(self):
-        if self.direction=='1':
-            dir='0'
-        elif self.direction=='0':
-            dir='1'
-        else:
-            dir='1'
+        dir = ''
+        if self.sort_parameter[0] == '+':
+            dir = self.sort_parameter.replace('+', '-', 1)
+        if self.sort_parameter[0] == '-':
+            dir = self.sort_parameter.replace('-', '+', 1)
         return dir

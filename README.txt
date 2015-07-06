@@ -12,3 +12,12 @@ Getting Started
 
 - $VENV/bin/pserve development.ini
 
+
+Testing & Code coverage
+----------------
+
+- cd <Project folder directory>
+
+- nosetests
+
+- nosetests --with-coverage --cover-package=minu
