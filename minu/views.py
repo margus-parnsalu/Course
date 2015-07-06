@@ -3,6 +3,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import text
 
 from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
@@ -10,8 +11,6 @@ from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
 #SqlAlchemy object pagination logic extends Paginate
 from paginate_sqlalchemy import SqlalchemyOrmPage
 
-
-from .forms import (DepartmentForm)
 from .sorts import SORT_DICT, SortValue
 
 from .forms import (DepartmentForm, EmployeeForm)
@@ -78,7 +77,12 @@ def department_add(request):
 @view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'])
 def department_edit(request):
 
-    department = DBSession.query(Department).filter(Department.department_id==request.matchdict['dep_id']).first()
+    try:
+        department = DBSession.query(Department).filter(Department.department_id==request.matchdict['dep_id']).one()
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
+    except NoResultFound:
+        return HTTPNotFound('Department not found!')
 
     form = DepartmentForm(request.POST, department, csrf_context=request.session)
 
@@ -150,12 +154,12 @@ def employee_add(request):
 def employee_edit(request):
 
     try:
-        employee = DBSession.query(Employee).filter(Employee.employee_id==request.matchdict['emp_id']).first()
+        employee = DBSession.query(Employee).filter(Employee.employee_id==request.matchdict['emp_id']).one()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-
-    if employee is None:
+    except NoResultFound:
         return HTTPNotFound('Employee not found!')
+
 
     form = EmployeeForm(request.POST, employee, csrf_context=request.session)
 

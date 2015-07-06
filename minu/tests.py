@@ -109,6 +109,8 @@ class ViewDepartmentTests(unittest.TestCase):
         self.assertEqual(info['sortdir'], '+department')
 
 
+
+
 class ViewEmployeeTests(unittest.TestCase):
     def setUp(self):
         self.session = _initTestingDB()
@@ -149,6 +151,13 @@ class ViewEmployeeTests(unittest.TestCase):
         self.assertEqual(info['sortdir'], '+employee')
 
 
+
+
+
+
+
+
+
 class FunctionalTests(unittest.TestCase):
 
     def setUp(self):
@@ -184,3 +193,49 @@ class FunctionalTests(unittest.TestCase):
     def test_employees_report(self):
         res = self.testapp.get('/employees', status=200)
         self.assertIn(b'<h3>Employees</h3>', res.body)
+
+    def test_department_form_add_GET(self):
+        # Get the form
+        res = self.testapp.get('/departments/add', status=200)
+        self.assertIn(b'department_name', res.body)
+
+    def test_department_form_add_POST(self):
+        # Get the form
+        res = self.testapp.get('/departments/add')
+        form = res.form
+        form['department_name'] = 'test'
+        res = form.submit('submit')
+        self.assertEqual(res.location, 'http://localhost/departments')
+
+    def test_department_form_edit_GET(self):
+        # Get the form
+        res = self.testapp.get('/departments/1/edit', status=200)
+        self.assertIn(b'A Minu Test', res.body)
+
+    def test_department_form_edit_GET_unknown_id(self):
+        # Get the form
+        res = self.testapp.get('/departments/100/edit', status=404)
+        self.assertIn(b'Department not found!', res.body)
+
+    def test_department_form_edit_POST(self):
+        # Get the form
+        res = self.testapp.get('/departments/1/edit')
+        form = res.form
+        form['department_name'] = 'test'
+        res = form.submit('submit')
+        self.assertEqual(res.location, 'http://localhost/departments')
+
+    def test_employee_form_GET(self):
+        # Get the form
+        res = self.testapp.get('/employees/add', status=200)
+        self.assertIn(b'first_name', res.body)
+
+    def test_employee_form_edit_GET(self):
+        # Get the form
+        res = self.testapp.get('/employees/1/edit', status=200)
+        self.assertIn(b'John', res.body)
+
+    def test_employee_form_edit_GET_unknown_id(self):
+        # Get the form
+        res = self.testapp.get('/employees/100/edit', status=404)
+        self.assertIn(b'Employee not found!', res.body)
