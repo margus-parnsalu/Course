@@ -156,8 +156,6 @@ class ViewEmployeeTests(unittest.TestCase):
 
 
 
-
-
 class FunctionalTests(unittest.TestCase):
 
     def setUp(self):
@@ -168,6 +166,15 @@ class FunctionalTests(unittest.TestCase):
         app = main({}, **settings)
         from webtest import TestApp
         self.testapp = TestApp(app)
+
+        #Login for tests to work
+        res = self.testapp.get('/login')
+        form = res.form
+        form['login'] = 'editor'
+        form['password'] = 'editor'
+        form['came_from'] = '/'
+        res = form.submit('submit')
+
         _initTestingDB()
 
     def tearDown(self):
