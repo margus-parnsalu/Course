@@ -6,8 +6,11 @@ from sqlalchemy.orm import (relationship, backref, scoped_session, sessionmaker)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
+from pyramid.security import (Allow, Everyone)
+
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
 
 class Employee(Base):
     __tablename__ = 'hr_employees'
@@ -21,9 +24,6 @@ class Employee(Base):
     salary = Column(Integer)
 
     department_id = Column(Integer, ForeignKey('hr_departments.department_id'))
-
-
-
     department = relationship("Department", backref="hr_employees", foreign_keys=[department_id])
 
     def __repr__(self):
@@ -45,6 +45,14 @@ class Department(Base):
         return '<Department %r>' % (self.department_name)
     def __str__(self):
         return self.department_name
+
+
+
+class RootFactory(object):
+    __acl__ = [ (Allow, Everyone, 'view'),
+                (Allow, 'group:editors', 'edit') ]
+    def __init__(self, request):
+        pass
 
 #Pagination page row count
 ITEMS_PER_PAGE = 3

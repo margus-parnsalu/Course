@@ -1,12 +1,17 @@
 from pyramid.config import Configurator
 #Session Cookie setup
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+#Security
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from .security import groupfinder
 
 from sqlalchemy import engine_from_config
 
 from .models import (
     DBSession,
     Base,
+    RootFactory
     )
 
 
@@ -22,9 +27,14 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
-     #Session factory included
-    config = Configurator(settings=settings, session_factory = my_session_factory)
+    #Security
+    authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder, hashalg='sha512')
+    authz_policy = ACLAuthorizationPolicy()
 
+    config = Configurator(settings=settings, root_factory=RootFactory, session_factory = my_session_factory)
+
+    config.set_authentication_policy(authn_policy)
+    config.set_authorization_policy(authz_policy)
 
     #Jinja:
     #config.add_translation_dirs('locale/')
@@ -36,6 +46,10 @@ def main(global_config, **settings):
 
     #Routes
     config.add_route('home', '/')
+
+    #Security views
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
 
     #Departments
     config.add_route('department_view', '/departments')
