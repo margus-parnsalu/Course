@@ -5,7 +5,8 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.authentication import AuthTktAuthenticationPolicy, RemoteUserAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from .security import groupfinder, RootFactory
-
+from pyramid_multiauth import MultiAuthenticationPolicy
+#DB connection
 from sqlalchemy import engine_from_config
 
 from .models import (DBSession, Base)
@@ -16,7 +17,7 @@ def main(global_config, **settings):
     """
 
     #Session factory (CSRF)
-    my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
+    my_session_factory = UnencryptedCookieSessionFactoryConfig(settings['session.secret'])
 
     #SqlAlchemy:
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -25,8 +26,15 @@ def main(global_config, **settings):
 
     #Security
     #authn_policy = RemoteUserAuthenticationPolicy(environ_key='REMOTE_USER', callback=groupfinder)
-    authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder, hashalg='sha512')
+    #authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder, hashalg='sha512')
     authz_policy = ACLAuthorizationPolicy()
+
+    #Pyramid_multiauth seperate module for REMOTE_USER fallback
+    policies = [
+        RemoteUserAuthenticationPolicy(environ_key='REMOTE_USER', callback=groupfinder),
+        AuthTktAuthenticationPolicy(settings['auth.secret'], callback=groupfinder, hashalg='sha512')
+    ]
+    authn_policy = MultiAuthenticationPolicy(policies)
 
     config = Configurator(settings=settings, root_factory=RootFactory, session_factory = my_session_factory)
 

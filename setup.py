@@ -20,7 +20,8 @@ requires = [
     'pyramid_jinja2==2.5',
     'WTForms==2.0.2',
     'paginate_sqlalchemy==0.2.0',
-    'WebTest'
+    'WebTest',
+    'pyramid-multiauth==0.5.0',
     ]
 
 setup(name='minu',

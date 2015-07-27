@@ -161,7 +161,9 @@ class FunctionalTests(unittest.TestCase):
     def setUp(self):
         from minu import main
         settings = { 'sqlalchemy.url': 'sqlite://',
-                     'jinja2.directories' : 'minu:templates'
+                     'jinja2.directories' : 'minu:templates',
+                     'session.secret' : 'sess',
+                     'auth.secret' : 'auth'
                      }
         app = main({}, **settings)
         from webtest import TestApp
