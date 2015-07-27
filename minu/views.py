@@ -188,8 +188,7 @@ def employee_edit(request):
 
 
 
-@view_config(route_name='login', renderer='login.jinja2',
-             permission='view')
+@view_config(route_name='login', renderer='login.jinja2', permission='view')
 @forbidden_view_config(renderer='login.jinja2')#For customizing default 404 forbidden template
 def login(request):
     came_from = request.referer or request.route_url('home')
