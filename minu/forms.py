@@ -1,4 +1,4 @@
-from wtforms import validators, StringField, IntegerField, DateField
+from wtforms import validators, StringField, IntegerField, DateField, HiddenField, PasswordField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.ext.csrf.session import SessionSecureForm
 from wtforms.validators import ValidationError
@@ -21,6 +21,10 @@ class BaseForm(SessionSecureForm):
             raise ValidationError('Invalid CSRF token; the form probably expired.  Try again.')
 
 
+class LoginForm(BaseForm):
+    came_from = HiddenField(u'Came_from')
+    login = StringField(u'Login')
+    password = PasswordField(u'Password')
 
 class DepartmentForm(BaseForm):
     department_name = StringField(u'Department Name', [validators.Length(min=3, max=60),

@@ -156,18 +156,27 @@ class ViewEmployeeTests(unittest.TestCase):
 
 
 
-
-
 class FunctionalTests(unittest.TestCase):
 
     def setUp(self):
         from minu import main
         settings = { 'sqlalchemy.url': 'sqlite://',
-                     'jinja2.directories' : 'minu:templates'
+                     'jinja2.directories' : 'minu:templates',
+                     'session.secret' : 'sess',
+                     'auth.secret' : 'auth'
                      }
         app = main({}, **settings)
         from webtest import TestApp
         self.testapp = TestApp(app)
+
+        #Login for tests to work
+        res = self.testapp.get('/login')
+        form = res.form
+        form['login'] = 'editor'
+        form['password'] = 'editor'
+        form['came_from'] = '/'
+        res = form.submit('submit')
+
         _initTestingDB()
 
     def tearDown(self):

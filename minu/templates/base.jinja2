@@ -61,7 +61,14 @@ $(function() {
 
     </ul>
 
+    {% if logged_in: %}
+        <a class="btn btn-default btn-xs navbar-btn navbar-right" href="{{ request.route_url('logout') }}">x</a>
+        <p class="navbar-text navbar-right">User: {{ logged_in }}&nbsp;&nbsp;</p>
+    {% endif %}
 
+    {% if logged_in==None %}
+        <a class="btn btn-default btn-xs navbar-btn navbar-right" href="{{ request.route_url('login') }}">Login</a>
+    {% endif %}
 
 
   </div><!-- /.navbar-collapse -->

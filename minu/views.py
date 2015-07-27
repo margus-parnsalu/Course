@@ -1,32 +1,33 @@
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.security import remember, forget, authenticated_userid
 
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import text
 
+from .security import (userfinder)
 from .models import (DBSession, Department, Employee, ITEMS_PER_PAGE )
 
 #SqlAlchemy object pagination logic extends Paginate
 from paginate_sqlalchemy import SqlalchemyOrmPage
-
+#Sorting logic
 from .sorts import SORT_DICT, SortValue
 
-from .forms import (DepartmentForm, EmployeeForm)
+from .forms import (LoginForm, DepartmentForm, EmployeeForm)
 
 
 
-
-
-@view_config(route_name='home', renderer='home.jinja2', request_method='GET')
+@view_config(route_name='home', renderer='home.jinja2', request_method='GET', permission='view')
 def home(request):
-    return {'project': 'Koolitus'}
+    return {'project': 'Koolitus',
+            'logged_in': authenticated_userid(request)}
 
 
 
-@view_config(route_name='department_view', renderer='department_r.jinja2', request_method='GET')
-@view_config(route_name='department_view:page', renderer='department_r.jinja2', request_method='GET')
+@view_config(route_name='department_view', renderer='department_r.jinja2', request_method='GET', permission='view')
+@view_config(route_name='department_view:page', renderer='department_r.jinja2', request_method='GET', permission='view')
 def department_view(request):
     #Getting 'sort' URL query parameter and initializing if not present
     sort_input = request.GET.get('sort','+department')
@@ -56,11 +57,12 @@ def department_view(request):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
 
     return {'departments': records,
-            'sortdir': sort_dir }
+            'sortdir': sort_dir,
+            'logged_in': authenticated_userid(request) }
 
 
 
-@view_config(route_name='department_add', renderer='department_f.jinja2', request_method=['GET','POST'])
+@view_config(route_name='department_add', renderer='department_f.jinja2', request_method=['GET','POST'], permission='edit')
 def department_add(request):
 
     form = DepartmentForm(request.POST, csrf_context=request.session)
@@ -71,10 +73,11 @@ def department_add(request):
         request.session.flash('Department Added!')
         return HTTPFound(location=request.route_url('department_view'))
 
-    return {'form': form}
+    return {'form': form,
+            'logged_in': authenticated_userid(request)}
 
 
-@view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'])
+@view_config(route_name='department_edit', renderer='department_f.jinja2', request_method=['GET','POST'], permission='edit')
 def department_edit(request):
 
     try:
@@ -92,11 +95,12 @@ def department_edit(request):
         request.session.flash('Department Updated!')
         return HTTPFound(location=request.route_url('department_view'))
 
-    return {'form': form}
+    return {'form': form,
+            'logged_in': authenticated_userid(request)}
 
 
-@view_config(route_name='employee_view', renderer='employee_r.jinja2', request_method='GET')
-@view_config(route_name='employee_view:page', renderer='employee_r.jinja2', request_method='GET')
+@view_config(route_name='employee_view', renderer='employee_r.jinja2', request_method='GET', permission='view')
+@view_config(route_name='employee_view:page', renderer='employee_r.jinja2', request_method='GET', permission='view')
 def employee_view(request):
 
     sort_input = request.GET.get('sort','+employee')
@@ -126,10 +130,11 @@ def employee_view(request):
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'employees': records,
-            'sortdir': sort_dir}
+            'sortdir': sort_dir,
+            'logged_in': authenticated_userid(request)}
 
 
-@view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'])
+@view_config(route_name='employee_add', renderer='employee_f.jinja2', request_method=['GET','POST'], permission='edit')
 def employee_add(request):
 
     form = EmployeeForm(request.POST, csrf_context=request.session)
@@ -147,10 +152,11 @@ def employee_add(request):
         request.session.flash('Employee Added!')
         return HTTPFound(location=request.route_url('employee_view'))
 
-    return {'form': form}
+    return {'form': form,
+            'logged_in': authenticated_userid(request)}
 
 
-@view_config(route_name='employee_edit', renderer='employee_f.jinja2', request_method=['GET','POST'])
+@view_config(route_name='employee_edit', renderer='employee_f.jinja2', request_method=['GET','POST'], permission='edit')
 def employee_edit(request):
 
     try:
@@ -177,8 +183,42 @@ def employee_edit(request):
         request.session.flash('Employee Updated!')
         return HTTPFound(location=request.route_url('employee_view'))
 
+    return {'form': form,
+            'logged_in': authenticated_userid(request)}
 
-    return {'form': form}
+
+
+@view_config(route_name='login', renderer='login.jinja2',
+             permission='view')
+@forbidden_view_config(renderer='login.jinja2')#For customizing default 404 forbidden template
+def login(request):
+    came_from = request.referer or request.route_url('home')
+    login_url = request.route_url('login')
+    if came_from == login_url:
+        came_from = '/' # never use the login form itself as came_from
+    login = ''
+    form = LoginForm(request.POST, came_from, login, csrf_context=request.session)
+    message = ''
+    if request.method == 'POST' and form.validate():
+        login = request.params['login']
+        password = request.params['password']
+        if userfinder(login, password) == True:
+            headers = remember(request, login)
+            request.session.flash('User: '+ login + ' logged in!')
+            return HTTPFound(location = came_from,
+                             headers = headers)
+        message = 'Failed login!'
+    return {'form' : form,
+            'message' : message,
+            'logged_in': authenticated_userid(request)}
+
+
+@view_config(route_name='logout',
+             permission='view')
+def logout(request):
+    headers = forget(request)
+    loc = request.route_url('home')
+    return HTTPFound(location = loc, headers = headers)
 
 
 
