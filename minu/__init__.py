@@ -2,17 +2,13 @@ from pyramid.config import Configurator
 #Session Cookie setup
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 #Security
-from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy, RemoteUserAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from .security import groupfinder
+from .security import groupfinder, RootFactory
 
 from sqlalchemy import engine_from_config
 
-from .models import (
-    DBSession,
-    Base,
-    RootFactory
-    )
+from .models import (DBSession, Base)
 
 
 def main(global_config, **settings):
@@ -28,6 +24,7 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
 
     #Security
+    #authn_policy = RemoteUserAuthenticationPolicy(environ_key='REMOTE_USER', callback=groupfinder)
     authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder, hashalg='sha512')
     authz_policy = ACLAuthorizationPolicy()
 

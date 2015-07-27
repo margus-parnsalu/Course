@@ -6,7 +6,6 @@ from sqlalchemy.orm import (relationship, backref, scoped_session, sessionmaker)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-from pyramid.security import (Allow, Everyone)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -47,12 +46,6 @@ class Department(Base):
         return self.department_name
 
 
-
-class RootFactory(object):
-    __acl__ = [ (Allow, Everyone, 'view'),
-                (Allow, 'group:editors', 'edit') ]
-    def __init__(self, request):
-        pass
 
 #Pagination page row count
 ITEMS_PER_PAGE = 3
