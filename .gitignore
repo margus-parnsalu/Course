@@ -4,3 +4,6 @@
 *.egg-info
 *.sqlite
 .idea/
+.git/
+.coverage
+

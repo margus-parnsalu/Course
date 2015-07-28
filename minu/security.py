@@ -2,7 +2,9 @@ from pyramid.security import (Allow, Everyone)
 
 USERS = {'editor':'editor',
           'viewer':'viewer'}
-GROUPS = {'editor':['group:editors']}
+GROUPS = {'editor':['group:editors'],
+          'gunnva@ET.EE':['group:editors'],
+          'margusp@ET.EE':['group:editors']}
 
 # Validate user login in view
 def userfinder(userid, password):
