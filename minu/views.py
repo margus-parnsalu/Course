@@ -21,7 +21,9 @@ from .forms import (LoginForm, DepartmentForm, EmployeeForm)
 
 @view_config(route_name='home', renderer='home.jinja2', request_method='GET', permission='view')
 def home(request):
-    return {'project': 'Koolitus',
+    project_name = request.remote_user
+
+    return {'project': project_name,
             'logged_in': authenticated_userid(request)}
 
 
