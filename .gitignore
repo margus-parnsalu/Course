@@ -6,4 +6,7 @@
 .idea/
 .git/
 .coverage
+*.sock
+.pid
+.log
 
