@@ -64,7 +64,7 @@ class ViewHomeTests(unittest.TestCase):
         request = testing.DummyRequest()
         _registerRoutes(self.config)
         info = self._callFUT(request)
-        self.assertEqual(info['project'], 'Koolitus')
+        self.assertEqual(info['project'], 'Demo App')
 
 
 
@@ -186,7 +186,7 @@ class FunctionalTests(unittest.TestCase):
 
     def test_homepage(self):
         res = self.testapp.get('/', status=200)
-        self.assertIn(b'<h1>Koolitus</h1>', res.body)
+        self.assertIn(b'<h1>Demo App</h1>', res.body)
 
     def test_unexisting_page(self):
         self.testapp.get('/SomePage', status=404)
