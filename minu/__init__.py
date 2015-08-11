@@ -1,6 +1,6 @@
 from pyramid.config import Configurator
 #Session Cookie setup
-from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from pyramid.session import SignedCookieSessionFactory
 #Security
 from pyramid.authentication import AuthTktAuthenticationPolicy, RemoteUserAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
@@ -17,7 +17,7 @@ def main(global_config, **settings):
     """
 
     #Session factory (CSRF)
-    my_session_factory = UnencryptedCookieSessionFactoryConfig(settings['session.secret'])
+    my_session_factory = SignedCookieSessionFactory(settings['session.secret'])
 
     #SqlAlchemy:
     engine = engine_from_config(settings, 'sqlalchemy.')
