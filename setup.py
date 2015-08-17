@@ -12,7 +12,7 @@ requires = [
     'pyramid==1.5.7',
     'pyramid_debugtoolbar==2.4',
     'pyramid_tm==0.12',
-    'SQLAlchemy==1.0.4',
+    #'SQLAlchemy==1.0.4',
     'transaction==1.4.4',
     'zope.sqlalchemy==0.7.6',
     'waitress==0.8.9',
