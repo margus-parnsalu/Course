@@ -68,7 +68,7 @@ $(function() {
     {% endif %}
 
     {% if logged_in==None or logged_in=='': %}
-        <a class="btn btn-default btn-xs navbar-btn navbar-right" href="{{ request.route_url('login') }}">Login</a>
+        <a name="login" class="btn btn-default btn-xs navbar-btn navbar-right" href="{{ request.route_url('login') }}">Login</a>
     {% endif %}
 
 
