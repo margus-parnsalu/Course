@@ -6,6 +6,8 @@
 .idea/
 .git/
 .coverage
+dist/
+build/
 *.sock
 dev.ini
 

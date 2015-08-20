@@ -12,11 +12,11 @@ requires = [
     'pyramid==1.5.7',
     'pyramid_debugtoolbar==2.4',
     'pyramid_tm==0.12',
-    #'SQLAlchemy==1.0.4',
+    'SQLAlchemy==1.0.4',
     'transaction==1.4.4',
     'zope.sqlalchemy==0.7.6',
     'waitress==0.8.9',
-    #'psycopg2==2.6',
+    'psycopg2==2.6',
     'pyramid_jinja2==2.5',
     'WTForms==2.0.2',
     'paginate_sqlalchemy==0.2.0',
@@ -25,7 +25,7 @@ requires = [
     ]
 
 setup(name='minu',
-      version='0.0',
+      version='0.1.2',
       description='minu',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -48,5 +48,6 @@ setup(name='minu',
       main = minu:main
       [console_scripts]
       initialize_minu_db = minu.scripts.initializedb:main
+      minu_start_app = minu.scripts.start_app:start
       """,
       )
