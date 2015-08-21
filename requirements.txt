@@ -1,26 +1,13 @@
-Jinja2 (2.7.3)
-Mako (1.0.1)
-MarkupSafe (0.23)
-minu (0.0, /Users/margus/Projects/Course/minu)
-paginate (0.4.3)
-PasteDeploy (1.5.2)
-pip (1.5.4)
-psycopg2 (2.6)
-Pygments (2.0.2)
-pyramid (1.5.7)
-pyramid-debugtoolbar (2.4)
-pyramid-jinja2 (2.5)
-pyramid-mako (1.0.2)
-pyramid-tm (0.12)
-repoze.lru (0.6)
-setuptools (2.2)
-SQLAlchemy (1.0.4)
-transaction (1.4.4)
-translationstring (1.3)
-venusian (1.0)
-waitress (0.8.9)
-WebOb (1.4.1)
-WTForms (2.0.2)
-zope.deprecation (4.1.2)
-zope.interface (4.1.2)
-zope.sqlalchemy (0.7.6)
+pyramid==1.5.7
+pyramid_debugtoolbar==2.4
+pyramid_tm==0.12
+SQLAlchemy==1.0.4
+transaction==1.4.4
+zope.sqlalchemy==0.7.6
+waitress==0.8.9
+psycopg2==2.6
+pyramid_jinja2==2.5
+WTForms==2.0.2
+paginate_sqlalchemy==0.2.0
+WebTest
+pyramid-multiauth==0.5.0

@@ -26,6 +26,8 @@ class LoginForm(BaseForm):
     login = StringField(u'Login')
     password = PasswordField(u'Password')
 
+
+
 class DepartmentForm(BaseForm):
     department_name = StringField(u'Department Name', [validators.Length(min=3, max=60),
                                          validators.InputRequired(message=(u'Input Department Name'))])
